@@ -1,3 +1,6 @@
+
+# Some Functions are written here , to make main code less messed up
+
 from classes import *
 
 def get_position(reset=False):

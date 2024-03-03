@@ -1,6 +1,7 @@
 import pygame
 from classes import *
 from functions import get_position
+import variables
 import sys
 
 pygame.init()
@@ -26,7 +27,6 @@ knight_w = pygame.transform.scale(pygame.image.load("images/white-knight.png"), 
 knight_b = pygame.transform.scale(pygame.image.load("images/black-knight.png"), (block_size, block_size))
 
 
-
 red = (255,0,0)
 green = (0,255,0)
 blue = (0,0,255)
@@ -40,7 +40,6 @@ def game_loop(): # Main Game Loop
         pygame.event.pump
         inputs()
         draw()
-        temp()
         pygame.display.update()
 
 
@@ -59,9 +58,6 @@ def draw():
                 pygame.draw.rect(win,(90,90,90),(x,y,block_size,block_size),1)
                 dark = True
     
-    
-    #win.blit(rook, (border,border))
-
     # Texts
     alpha = ["a","b","c","d","e","f","g","h"]
     font = pygame.font.SysFont('comicsans', 15, True)
@@ -77,10 +73,37 @@ def draw():
     print(positions)
     # pawns
     for position in positions:
-        #print(i)
-        win.blit(pawn_b,(position[2][0],position[2][1]))
-
-
+        match position[0]:
+            case 0:
+                if position[1]==1:
+                    win.blit(pawn_b,(position[2][0],position[2][1]))
+                else:
+                    win.blit(pawn_w,(position[2][0],position[2][1]))
+            case 1:
+                if position[1]==1:
+                    win.blit(knight_b,(position[2][0],position[2][1]))
+                else:
+                    win.blit(knight_w,(position[2][0],position[2][1]))
+            case 2:
+                if position[1]==1:
+                    win.blit(bishop_b,(position[2][0],position[2][1]))
+                else:
+                    win.blit(bishop_w,(position[2][0],position[2][1]))
+            case 3:
+                if position[1]==1:
+                    win.blit(rook_b,(position[2][0],position[2][1]))
+                else:
+                    win.blit(rook_w,(position[2][0],position[2][1]))
+            case 4:
+                if position[1]==1:
+                    win.blit(queen_b,(position[2][0],position[2][1]))
+                else:
+                    win.blit(queen_w,(position[2][0],position[2][1]))
+            case 5:
+                if position[1]==1:
+                    win.blit(king_b,(position[2][0],position[2][1]))
+                else:
+                    win.blit(king_w,(position[2][0],position[2][1]))
 
 
 def inputs():  # Take all inputs of player
@@ -89,20 +112,34 @@ def inputs():  # Take all inputs of player
                 pygame.quit()
                 sys.exit()
 
-def temp():
-    pass
-    #rook_1 = piece(1,[100,100],4)
-    #n = functions.get_position(rook_1)
-    #print(n)
-
 def create_pieces():
-    for i in range(8):
-        globals()[f"pawn_b{i}"] = pawns(0,[border+block_size*i,border+block_size*6])
-    for i in range(8):
-        globals()[f"pawn_w{i}"] = pawns(0,[border+block_size*i,border])
-    
-    
+    ######## PAWNS ##############
+    for i,j in enumerate(variables.pawn_pos_w):
+        globals()[f"pawn_w{i}"] = pawns(0,variables.block_positions[j])  # Creating objects in pawn class (white color)
+    for i,j in enumerate(variables.pawn_pos_b):
+        globals()[f"pawn_b{i}"] = pawns(1,variables.block_positions[j]) # blck color
 
+    ######## ROOK ################
+    for i,j in enumerate(variables.rook_pos_w):globals()[f"rook_w{i}"] = rook(0,variables.block_positions[j])
+    for i,j in enumerate(variables.rook_pos_b):globals()[f"rook_b{i}"] = rook(1,variables.block_positions[j])
+                         
+    ###### BISHOP #############
+    for i,j in enumerate(variables.bishop_pos_w):globals()[f"bishop_w{i}"] = bishop(0,variables.block_positions[j])
+    for i,j in enumerate(variables.bishop_pos_b):globals()[f"bishop_b{i}"] = bishop(1,variables.block_positions[j])
+
+    ######## KNIGHT #############
+    for i,j in enumerate(variables.knight_pos_w):globals()[f"knight_w{i}"] = knight(0,variables.block_positions[j])
+    for i,j in enumerate(variables.knight_pos_b):globals()[f"knight_b{i}"] = knight(1,variables.block_positions[j])
+
+    ####### Queen ######
+
+    queen_b  = queen(1,variables.block_positions["d8"])
+    queen_w  = queen(0,variables.block_positions["d1"])
+
+    ###### King #############
+
+    king_b = king(1,variables.block_positions["e8"])
+    king_w = king(0,variables.block_positions["e1"])
 
 create_pieces()
 positions = get_position()

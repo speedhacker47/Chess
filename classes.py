@@ -13,3 +13,33 @@ class pawns(piece):
         super().__init__(color, position)
         self.type = 0
         
+class knight(piece):
+    def __init__(self, color: int, position: list):
+        super().__init__(color, position)
+        self.type = 1
+
+class bishop(piece):
+    def __init__(self, color: int, position: list):
+        super().__init__(color, position)
+        self.type = 2
+
+class rook(piece):
+    def __init__(self, color: int, position: list):
+        super().__init__(color, position)
+        self.type = 3
+
+class queen(piece):
+    def __init__(self, color: int, position: list):
+        super().__init__(color, position)
+        self.type = 4
+
+class king(piece):
+    def __init__(self, color: int, position: list):
+        super().__init__(color, position)
+        self.type = 5
+
+
+
+
+
+

@@ -1,4 +1,6 @@
 import pygame
+from classes import *
+from functions import get_position
 import sys
 
 pygame.init()
@@ -10,8 +12,20 @@ white = (255,255,255)
 
 block_size = 70 # size of a block , also of images
 
-rook = pygame.image.load("images/black-rook.png")
-rook = pygame.transform.scale(rook, (block_size, block_size))
+rook_w = pygame.transform.scale(pygame.image.load("images/white-rook.png"), (block_size, block_size))
+rook_b = pygame.transform.scale(pygame.image.load("images/black-rook.png"), (block_size, block_size))
+pawn_w = pygame.transform.scale(pygame.image.load("images/white-pawn.png"), (block_size, block_size))
+pawn_b = pygame.transform.scale(pygame.image.load("images/black-pawn.png"), (block_size, block_size))
+bishop_w = pygame.transform.scale(pygame.image.load("images/white-bishop.png"), (block_size, block_size))
+bishop_b = pygame.transform.scale(pygame.image.load("images/black-bishop.png"), (block_size, block_size))
+queen_w = pygame.transform.scale(pygame.image.load("images/white-queen.png"), (block_size, block_size))
+queen_b = pygame.transform.scale(pygame.image.load("images/black-queen.png"), (block_size, block_size))
+king_w = pygame.transform.scale(pygame.image.load("images/white-king.png"), (block_size, block_size))
+king_b = pygame.transform.scale(pygame.image.load("images/black-king.png"), (block_size, block_size))
+knight_w = pygame.transform.scale(pygame.image.load("images/white-knight.png"), (block_size, block_size))
+knight_b = pygame.transform.scale(pygame.image.load("images/black-knight.png"), (block_size, block_size))
+
+
 
 red = (255,0,0)
 green = (0,255,0)
@@ -26,6 +40,7 @@ def game_loop(): # Main Game Loop
         pygame.event.pump
         inputs()
         draw()
+        temp()
         pygame.display.update()
 
 
@@ -44,9 +59,8 @@ def draw():
                 pygame.draw.rect(win,(90,90,90),(x,y,block_size,block_size),1)
                 dark = True
     
-    # Drawing Pieces
     
-    #win.blit(rook, (0,0))
+    #win.blit(rook, (border,border))
 
     # Texts
     alpha = ["a","b","c","d","e","f","g","h"]
@@ -58,6 +72,14 @@ def draw():
         text = font.render(str(i+1), 1,(black))
         win.blit(text,(border-13,y+block_size/3))
 
+    #pieces
+    global positions
+    print(positions)
+    # pawns
+    for position in positions:
+        #print(i)
+        win.blit(pawn_b,(position[2][0],position[2][1]))
+
 
 
 
@@ -67,4 +89,21 @@ def inputs():  # Take all inputs of player
                 pygame.quit()
                 sys.exit()
 
+def temp():
+    pass
+    #rook_1 = piece(1,[100,100],4)
+    #n = functions.get_position(rook_1)
+    #print(n)
+
+def create_pieces():
+    for i in range(8):
+        globals()[f"pawn_b{i}"] = pawns(0,[border+block_size*i,border+block_size*6])
+    for i in range(8):
+        globals()[f"pawn_w{i}"] = pawns(0,[border+block_size*i,border])
+    
+    
+
+
+create_pieces()
+positions = get_position()
 game_loop()

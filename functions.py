@@ -12,6 +12,7 @@ def get_position(reset=False):
     return list
 
 def check_clicked(mouse):
+    global holding
     block_num = []
     block_pos = []
     block_size = 70
@@ -25,6 +26,12 @@ def check_clicked(mouse):
             block_num.append(i+1)
             block_pos.append(next_point-block_size)
             break
-    return block_pos
+    #print(piece.all_pieces)
+    for x in piece.all_pieces:
+        #print(x.position)
+        if x.position == block_pos:
+            holding = x
+            
+    return [block_pos,holding]
 
 

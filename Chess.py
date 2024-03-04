@@ -16,6 +16,8 @@ block_size = 70 # size of a block , also of images
 
 block_clicked = []
 
+holding = None
+
 rook_w = pygame.transform.scale(pygame.image.load("images/white-rook.png"), (block_size, block_size))
 rook_b = pygame.transform.scale(pygame.image.load("images/black-rook.png"), (block_size, block_size))
 pawn_w = pygame.transform.scale(pygame.image.load("images/white-pawn.png"), (block_size, block_size))
@@ -43,6 +45,7 @@ def game_loop(): # Main Game Loop
         pygame.event.pump
         inputs()
         draw()
+        move_piece()
         pygame.display.update()
 
 
@@ -50,16 +53,18 @@ def draw():
     win.fill(white)   # Blank White bg
     
     # Drawing Blocks
+    
     dark = True
     count = 0 
+    global holding
+    print(holding)
     for x in variables.block_positions_value_only:
         count += 1
-        print(block_clicked)
         if dark:
-            if x == block_clicked:pygame.draw.rect(win,blue,(x[0],x[1],block_size,block_size),0)
+            if holding is not None and x == holding.position : pygame.draw.rect(win,blue,(x[0],x[1],block_size,block_size),0)
             else : pygame.draw.rect(win,(90,90,90),(x[0],x[1],block_size,block_size),0)
         else:
-            if x == block_clicked: pygame.draw.rect(win,blue,(x[0],x[1],block_size,block_size),0)
+            if holding is not None and x == holding.position : pygame.draw.rect(win,blue,(x[0],x[1],block_size,block_size),0)
             else : pygame.draw.rect(win,(90,90,90),(x[0],x[1],block_size,block_size),1)
         if count % 8 !=  0 : dark = not dark
     
@@ -76,6 +81,7 @@ def draw():
 
     #pieces
     global positions
+    positions = get_position()
     # pawns
     for position in positions:
         match position[0]:
@@ -113,6 +119,7 @@ def draw():
 
 def inputs():  # Take all inputs of player
     global block_clicked
+    global holding
     for event in pygame.event.get():
             if event.type == pygame.QUIT:      # Check if you player clicked X to close window
                 pygame.quit()
@@ -120,7 +127,8 @@ def inputs():  # Take all inputs of player
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos=pygame.mouse.get_pos()
                 btn=pygame.mouse
-                block_clicked = functions.check_clicked([pos[0],pos[1]])
+                block_clicked = functions.check_clicked([pos[0],pos[1]])[0]
+                holding = functions.check_clicked([pos[0],pos[1]])[1]
 
 def create_pieces():
     ######## PAWNS ##############
@@ -130,8 +138,8 @@ def create_pieces():
         globals()[f"pawn_b{i}"] = pawns(1,variables.block_positions[j]) # blck color
 
     ######## ROOK ################
-    for i,j in enumerate(variables.rook_pos_w):globals()[f"rook_w{i}"] = rook(0,variables.block_positions[j])
-    for i,j in enumerate(variables.rook_pos_b):globals()[f"rook_b{i}"] = rook(1,variables.block_positions[j])
+    for i,j in enumerate(variables.rook_pos_w) : globals()[f"rook_w{i}"] = rook(0,variables.block_positions[j])
+    for i,j in enumerate(variables.rook_pos_b) : globals()[f"rook_b{i}"] = rook(1,variables.block_positions[j])
                          
     ###### BISHOP #############
     for i,j in enumerate(variables.bishop_pos_w):globals()[f"bishop_w{i}"] = bishop(0,variables.block_positions[j])
@@ -151,8 +159,10 @@ def create_pieces():
     king_b = king(1,variables.block_positions["e8"])
     king_w = king(0,variables.block_positions["e1"])
 
-
+def move_piece():
+    global block_clicked,holding
+    if holding is not None : holding.position = block_clicked
 
 create_pieces()
-positions = get_position()
+
 game_loop()

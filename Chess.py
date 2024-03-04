@@ -1,5 +1,6 @@
 import pygame
 from classes import *
+import functions
 from functions import get_position
 import variables
 import sys
@@ -12,6 +13,8 @@ win = pygame.display.set_mode((width,height))
 white = (255,255,255)
 
 block_size = 70 # size of a block , also of images
+
+block_clicked = []
 
 rook_w = pygame.transform.scale(pygame.image.load("images/white-rook.png"), (block_size, block_size))
 rook_b = pygame.transform.scale(pygame.image.load("images/black-rook.png"), (block_size, block_size))
@@ -48,15 +51,17 @@ def draw():
     
     # Drawing Blocks
     dark = True
-    for x in range(border,border+block_size*8,block_size):
-        dark = not dark
-        for y in range(border,border+block_size*8,block_size):
-            if dark:
-                pygame.draw.rect(win,(90,90,90),(x,y,block_size,block_size),0)
-                dark=False
-            else:
-                pygame.draw.rect(win,(90,90,90),(x,y,block_size,block_size),1)
-                dark = True
+    count = 0 
+    for x in variables.block_positions_value_only:
+        count += 1
+        print(block_clicked)
+        if dark:
+            if x == block_clicked:pygame.draw.rect(win,blue,(x[0],x[1],block_size,block_size),0)
+            else : pygame.draw.rect(win,(90,90,90),(x[0],x[1],block_size,block_size),0)
+        else:
+            if x == block_clicked: pygame.draw.rect(win,blue,(x[0],x[1],block_size,block_size),0)
+            else : pygame.draw.rect(win,(90,90,90),(x[0],x[1],block_size,block_size),1)
+        if count % 8 !=  0 : dark = not dark
     
     # Texts
     alpha = ["a","b","c","d","e","f","g","h"]
@@ -67,10 +72,10 @@ def draw():
     for i,y in enumerate(reversed(range(border,border+block_size*8,block_size))):
         text = font.render(str(i+1), 1,(black))
         win.blit(text,(border-13,y+block_size/3))
+    
 
     #pieces
     global positions
-    print(positions)
     # pawns
     for position in positions:
         match position[0]:
@@ -107,10 +112,15 @@ def draw():
 
 
 def inputs():  # Take all inputs of player
+    global block_clicked
     for event in pygame.event.get():
             if event.type == pygame.QUIT:      # Check if you player clicked X to close window
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos=pygame.mouse.get_pos()
+                btn=pygame.mouse
+                block_clicked = functions.check_clicked([pos[0],pos[1]])
 
 def create_pieces():
     ######## PAWNS ##############
@@ -140,6 +150,8 @@ def create_pieces():
 
     king_b = king(1,variables.block_positions["e8"])
     king_w = king(0,variables.block_positions["e1"])
+
+
 
 create_pieces()
 positions = get_position()

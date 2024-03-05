@@ -50,6 +50,7 @@ def game_loop(): # Main Game Loop
 
 
 def draw():
+    global positions,valid_blocks
     win.fill(white)   # Blank White bg
     
     # Drawing Blocks
@@ -57,7 +58,7 @@ def draw():
     dark = True
     count = 0 
     global holding
-    print(holding)
+    #print(holding)
     for x in variables.block_positions_value_only:
         count += 1
         if dark:
@@ -79,8 +80,18 @@ def draw():
         win.blit(text,(border-13,y+block_size/3))
     
 
-    #pieces
-    global positions
+        
+    ######### VALID MOVES ###############
+    for block in valid_blocks:
+        #print(block[0])
+        if block[0] >= 40 and block [0] < 600 and block[0] >= 40 and block[1] < 600:
+            pygame.draw.rect(win,green,(block[0],block[1],block_size,block_size),0)
+
+    for block in opponet_piece_in_path:
+        pygame.draw.rect(win,red,(block[0],block[1],block_size,block_size),0)
+
+    ########## PIECES ####################
+    
     positions = get_position()
     # pawns
     for position in positions:
@@ -162,7 +173,57 @@ def create_pieces():
 def move_piece():
     global block_clicked,holding
     if holding is not None : holding.position = block_clicked
+    if holding is not None : move_rule()
 
+def move_rule():
+    global holding,block_size,valid_blocks,opponet_piece_in_path
+    b = block_size
+    valid_blocks = []
+    
+    x = holding.position[0]
+    y = holding.position[1]
+
+    if holding.color == 0 :
+        match holding.type:
+            case 0: #PAWN
+                valid_blocks.append([x,y-block_size])
+                if y == 460 : valid_blocks.append([x,y-2*block_size])
+            case 3: #Rook
+                for i in range(8):
+                    valid_blocks.append([x,40+block_size*i])
+                for i in range(8):
+                    valid_blocks.append([40+block_size*i,y])
+            case 1: # Knight
+                valid_blocks.extend([[x+b,y-2*b],[x+b,y+2*b],[x-b,y+2*b],[x-b,y-2*b],[x-2*b,y+b],[x+2*b,y+b],[x-2*b,y-b],[x+2*b,y-b]])
+            case 2: # Bishop
+                last = 600
+                first = 40
+                for i in range(1,9):
+                    if not(x+i*b > last or y+i*b > last): valid_blocks.append([x+i*b,y+i*b])
+                    if not(x+i*b > last or y-i*b < first): valid_blocks.append([x+i*b,y-i*b])
+                    if not(x-i*b < first or y-i*b > last): valid_blocks.append([x-i*b,y-i*b])
+                    if not(x-i*b < first or y+i*b < first): valid_blocks.append([x-i*b,y+i*b])
+            case 4: # Queen
+                last = 600
+                first = 40
+                for i in range(1,9):
+                    if not(x+i*b > last or y+i*b > last): valid_blocks.append([x+i*b,y+i*b])
+                    if not(x+i*b > last or y-i*b < first): valid_blocks.append([x+i*b,y-i*b])
+                    if not(x-i*b < first or y-i*b > last): valid_blocks.append([x-i*b,y-i*b])
+                    if not(x-i*b < first or y+i*b < first): valid_blocks.append([x-i*b,y+i*b])
+                for i in range(8):
+                    valid_blocks.append([x,40+block_size*i])
+                for i in range(8):
+                    valid_blocks.append([40+block_size*i,y])
+            case 5: # King
+                valid_blocks.extend([[x+b,y],[x-b,y],[x,y+b],[x,y-b]])
+        opponet_piece_in_path = [] # Opponent piece in path
+        opponent_all_positions = [p.position for p in piece.all_pieces if p.color==1]
+        for path in valid_blocks:
+            if path in opponent_all_positions:
+                opponet_piece_in_path.append(path)
+        print(opponet_piece_in_path)
 create_pieces()
-
+valid_blocks = []
+opponet_piece_in_path = []
 game_loop()
